@@ -1,0 +1,271 @@
+CAMPAGNE PARAMS AVANCES - EPHAISTOS
+======================================================================
+
+[FAIL   ] wait_ssh explicite
+  Requete  : "demarre preprod-01 et attends que le ssh soit disponible"
+  Attendu  : fedora.vm_start + {'vm_name': 'preprod-01', 'wait_ssh': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'wait_ssh']
+
+[FAIL   ] wait_ip explicite
+  Requete  : "demarre preprod-01 et attends qu il ait une ip"
+  Attendu  : fedora.vm_start + {'vm_name': 'preprod-01', 'wait_ip': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'wait_ip']
+
+[FAIL   ] wait_ssh formulation courte
+  Requete  : "lance preprod-01 attends le ssh"
+  Attendu  : fedora.vm_start + {'vm_name': 'preprod-01', 'wait_ssh': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'wait_ssh']
+
+[FAIL   ] force explicite
+  Requete  : "arrete de force sandbox-02"
+  Attendu  : fedora.vm_stop + {'vm_name': 'sandbox-02', 'force': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'force']
+
+[FAIL   ] garde le disque
+  Requete  : "supprime sandbox-01 mais garde le disque"
+  Attendu  : fedora.vm_destroy + {'vm_name': 'sandbox-01', 'keep_storage': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'keep_storage']
+
+[PASS   ] keep_storage sans supprimer disk
+  Requete  : "supprime test-vm sans effacer les fichiers du disque"
+  Attendu  : fedora.vm_destroy + {'vm_name': 'test-vm', 'keep_storage': True}
+  Outil    : fedora.vm_destroy
+  Args     : {'vm_name': 'test-vm', 'force': False, 'keep_storage': True}
+
+[FAIL   ] sudo explicite
+  Requete  : "execute systemctl restart nginx sur preprod-01 en sudo"
+  Attendu  : fedora.vm_exec + {'vm_name': 'preprod-01', 'sudo': True}
+  Outil    : sudo systemctl restart nginx
+  Args     : {}
+  MANQUANT : ['vm_name', 'sudo']
+
+[FAIL   ] sudo avec commande
+  Requete  : "lance apt-get update sur sandbox-02 avec sudo"
+  Attendu  : fedora.vm_exec + {'vm_name': 'sandbox-02', 'sudo': True}
+  Outil    : sudo apt-get update
+  Args     : {}
+  MANQUANT : ['vm_name', 'sudo']
+
+[PARTIAL] copie recursive
+  Requete  : "copie /home/user/projet vers preprod-01 en recursif"
+  Attendu  : fedora.vm_copy + {'vm_name': 'preprod-01', 'recursive': True}
+  Outil    : fedora.vm_copy
+  Args     : {'vm_name': '/home/user/projet', 'source': '/home/user/projet', 'dest': 'preprod-01', 'direction': 'recursive', 'recursive': True, 'checksum': False, 'preserve': False}
+  ERREUR   : ['vm_name=preprod-01(got=/home/user/projet)']
+
+[FAIL   ] copie dossier recursif
+  Requete  : "transfere le dossier /var/www vers sandbox-02 de facon recursive"
+  Attendu  : fedora.vm_copy + {'vm_name': 'sandbox-02', 'recursive': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'recursive']
+
+[FAIL   ] snapshot live
+  Requete  : "cree un snapshot live de preprod-01"
+  Attendu  : fedora.vm_snapshot + {'vm_name': 'preprod-01', 'live': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'live']
+
+[PARTIAL] clone COW linked
+  Requete  : "clone preprod-01 en test-cow avec cow"
+  Attendu  : fedora.vm_clone + {'source_vm': 'preprod-01', 'new_vm_name': 'test-cow', 'linked': True}
+  Outil    : fedora.vm_clone
+  Args     : {'source_vm': 'preprod-01', 'new_vm_name': 'test-cow', 'start': True, 'autostart': True, 'linked': False, 'network': ''}
+  ERREUR   : ['linked=True(got=False)']
+
+[FAIL   ] clone linked true
+  Requete  : "clone preprod-01 en test-linked en mode linked"
+  Attendu  : fedora.vm_clone + {'source_vm': 'preprod-01', 'new_vm_name': 'test-linked', 'linked': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['source_vm', 'new_vm_name', 'linked']
+
+[FAIL   ] clone et demarre apres
+  Requete  : "clone preprod-01 en test-clone et demarre la vm apres"
+  Attendu  : fedora.vm_clone + {'source_vm': 'preprod-01', 'new_vm_name': 'test-clone', 'start': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['source_vm', 'new_vm_name', 'start']
+
+[FAIL   ] clone start formulation
+  Requete  : "duplique sandbox-02 en sandbox-03 et lance la apres"
+  Attendu  : fedora.vm_clone + {'source_vm': 'sandbox-02', 'new_vm_name': 'sandbox-03', 'start': True}
+  Outil    : cp /var/lib/sandbox/02 /var/lib/sandbox/03
+  Args     : {}
+  MANQUANT : ['source_vm', 'new_vm_name', 'start']
+
+[FAIL   ] dry_run mode test
+  Requete  : "clone systeme neutron en neutron-test en mode dry-run"
+  Attendu  : fedora.vm_clone_system + {'dry_run': True}
+  Outil    : fedora.vm_clone
+  Args     : {'source_vm': 'neutron', 'new_vm_name': 'neutron-test', 'start': False, 'autostart': False, 'linked': True, 'network': 'default'}
+  MANQUANT : ['dry_run']
+
+[FAIL   ] dry_run sans cloner vraiment
+  Requete  : "simule le clone systeme de neutron en backup sans l executer vraiment"
+  Attendu  : fedora.vm_clone_system + {'dry_run': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['dry_run']
+
+[FAIL   ] verification rapide
+  Requete  : "verifie rapidement neutron-clone"
+  Attendu  : fedora.vm_verify + {'vm_name': 'neutron-clone', 'quick': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'quick']
+
+[FAIL   ] verification verbose
+  Requete  : "verifie neutron-clone en mode verbeux avec detail"
+  Attendu  : fedora.vm_verify + {'vm_name': 'neutron-clone', 'verbose': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'verbose']
+
+[FAIL   ] compare paquets
+  Requete  : "verifie neutron-clone avec comparaison des paquets installes"
+  Attendu  : fedora.vm_verify + {'vm_name': 'neutron-clone', 'compare_packages': True}
+  Outil    : fedora.vm_clone
+  Args     : {'source_vm': 'vm1', 'new_vm_name': 'vm2', 'start': True, 'autostart': False, 'linked': True, 'network': 'public'}
+  MANQUANT : ['vm_name', 'compare_packages']
+
+[FAIL   ] status detaille
+  Requete  : "status detaille de preprod-01"
+  Attendu  : fedora.vm_status + {'vm_name': 'preprod-01', 'detailed': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'detailed']
+
+[FAIL   ] export vers chemin
+  Requete  : "exporte preprod-01 vers /mnt/exports"
+  Attendu  : fedora.vm_export + {'vm_name': 'preprod-01', 'output_path': '/mnt/exports'}
+  Outil    : exporte preprod-01 vers /mnt/exports
+  Args     : {}
+  MANQUANT : ['vm_name', 'output_path']
+
+[FAIL   ] export dry_run
+  Requete  : "exporte preprod-01 en mode dry-run sans vraiment exporter"
+  Attendu  : fedora.vm_export + {'vm_name': 'preprod-01', 'dry_run': True}
+  Outil    : exporte preprod-01 en mode dry-run sans vraiment exporter
+  Args     : {}
+  MANQUANT : ['vm_name', 'dry_run']
+
+[FAIL   ] import et demarre
+  Requete  : "importe /home/amineutron/vm-exports/test.tar.gz et demarre la vm apres"
+  Attendu  : fedora.vm_import + {'archive_path': '/home/amineutron/vm-exports/test.tar.gz', 'start': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['archive_path', 'start']
+
+[FAIL   ] import dry_run
+  Requete  : "importe /home/amineutron/vm-exports/test.tar.gz en dry-run pour tester"
+  Attendu  : fedora.vm_import + {'archive_path': '/home/amineutron/vm-exports/test.tar.gz', 'dry_run': True}
+  Outil    : importe
+  Args     : {'vm_name': '/home/amineutron/vm-exports/test.tar.gz', 'mode': 'dry-run'}
+  MANQUANT : ['archive_path', 'dry_run']
+
+[FAIL   ] liste type timeshift
+  Requete  : "liste mes sauvegardes timeshift"
+  Attendu  : fedora.backup_list + {'type': 'timeshift'}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['type']
+
+[FAIL   ] liste type borg
+  Requete  : "affiche les backups borg"
+  Attendu  : fedora.backup_list + {'type': 'borg'}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['type']
+
+[FAIL   ] liste detaillee
+  Requete  : "affiche les sauvegardes en detail"
+  Attendu  : fedora.backup_list + {'detailed': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['detailed']
+
+[FAIL   ] create type timeshift
+  Requete  : "cree un backup timeshift de preprod-01"
+  Attendu  : fedora.backup_create + {'vm_name': 'preprod-01', 'type': 'timeshift'}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'type']
+
+[FAIL   ] create avec verification
+  Requete  : "fais une sauvegarde de preprod-01 avec verification integrite"
+  Attendu  : fedora.backup_create + {'vm_name': 'preprod-01', 'verify': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'verify']
+
+[PARTIAL] create dry_run
+  Requete  : "cree un backup de preprod-01 en dry-run"
+  Attendu  : fedora.backup_create + {'vm_name': 'preprod-01', 'dry_run': True}
+  Outil    : fedora.backup_create
+  Args     : {'preprod-01': 'dry-run'}
+  MANQUANT : ['vm_name', 'dry_run']
+
+[FAIL   ] restore dry_run
+  Requete  : "restaure le backup de preprod-01 en dry-run"
+  Attendu  : fedora.backup_restore + {'dry_run': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['dry_run']
+
+[FAIL   ] restore force
+  Requete  : "restaure de force le backup de preprod-01"
+  Attendu  : fedora.backup_restore + {'force': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['force']
+
+[FAIL   ] verify deep
+  Requete  : "verifie en profondeur le backup de preprod-01"
+  Attendu  : fedora.backup_verify + {'vm_name': 'preprod-01', 'deep': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'deep']
+
+[FAIL   ] verify quick
+  Requete  : "verifie rapidement le backup de preprod-01"
+  Attendu  : fedora.backup_verify + {'vm_name': 'preprod-01', 'quick': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['vm_name', 'quick']
+
+[FAIL   ] clean dry_run
+  Requete  : "nettoie les anciens backups en dry-run sans supprimer vraiment"
+  Attendu  : fedora.backup_clean + {'dry_run': True}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['dry_run']
+
+[FAIL   ] clean keep_last 3
+  Requete  : "nettoie les sauvegardes en gardant les 3 dernieres"
+  Attendu  : fedora.backup_clean + {'keep_last': 3}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['keep_last']
+
+[FAIL   ] clean keep_last 5
+  Requete  : "purge les backups en conservant les 5 plus recents"
+  Attendu  : fedora.backup_clean + {'keep_last': 5}
+  Outil    : None
+  Args     : {}
+  MANQUANT : ['keep_last']
+
+======================================================================
+PASS: 1  PARTIAL: 3  FAIL: 34
+SCORE: 7%

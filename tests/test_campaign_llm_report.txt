@@ -1,0 +1,114 @@
+CAMPAGNE DE TESTS MCP - PHASE 2 : EPHAISTOS (LLM)
+======================================================================
+
+Tests des requetes RULE_MISS via RAG + EPHAISTOS (Qwen 7B)
+
+[LLM_FAIL  ] allume TV
+  Requete  : "allume la tv"
+  Attendu  : tv.power_on
+  Obtenu   : None
+
+[LLM_FAIL  ] eteins TV
+  Requete  : "eteins la tele"
+  Attendu  : tv.power_off
+  Obtenu   : None
+
+[LLM_FAIL  ] TV en veille
+  Requete  : "mets la tv en veille"
+  Attendu  : tv.power_off
+  Obtenu   : None
+
+[LLM_FAIL  ] lance Netflix
+  Requete  : "lance netflix sur la tv"
+  Attendu  : tv.launch_app
+  Obtenu   : None
+
+[LLM_FAIL  ] ouvre YouTube
+  Requete  : "ouvre youtube sur la tele"
+  Attendu  : tv.launch_app
+  Obtenu   : None
+
+[LLM_FAIL  ] video YouTube
+  Requete  : "joue cette video youtube sur la tv https://youtu.be/dQw4w9WgXcQ"
+  Attendu  : tv.youtube_video
+  Obtenu   : None
+
+[LLM_FAIL  ] allume ambilight
+  Requete  : "allume l ambilight"
+  Attendu  : tv.ambilight_on
+  Obtenu   : None
+
+[LLM_FAIL  ] eteins ambilight
+  Requete  : "eteins l ambilight"
+  Attendu  : tv.ambilight_off
+  Obtenu   : None
+
+[LLM_FAIL  ] couleur ambilight
+  Requete  : "mets l ambilight en bleu"
+  Attendu  : tv.ambilight_set_color
+  Obtenu   : None
+
+[LLM_FAIL  ] allume lumiere chevet
+  Requete  : "allume la lumiere chevet"
+  Attendu  : hue.turn_on_light
+  Obtenu   : allume
+
+[LLM_PASS  ] luminosite 50
+  Requete  : "mets la luminosite a 50 pour cent"
+  Attendu  : hue.set_brightness
+  Obtenu   : hue.set_brightness
+
+[LLM_FAIL  ] lumieres plus fortes
+  Requete  : "mets les lumieres plus fortes"
+  Attendu  : hue.set_brightness
+  Obtenu   : hue.set_group_brightness
+
+[LLM_FAIL  ] couleur rouge
+  Requete  : "mets les lumieres en rouge"
+  Attendu  : hue.set_color_rgb
+  Obtenu   : None
+  Args     : {'red': 255, 'green': 0, 'blue': 0, 'group_id': 81}
+
+[LLM_FAIL  ] ambiance bleue
+  Requete  : "mets une ambiance bleue"
+  Attendu  : hue.set_color_rgb
+  Obtenu   : None
+
+[LLM_FAIL  ] caste video youtube
+  Requete  : "caste cette video youtube https://youtu.be/dQw4w9WgXcQ"
+  Attendu  : catt.cast_youtube
+  Obtenu   : None
+
+[LLM_FAIL  ] diffuse video
+  Requete  : "diffuse cette video sur la tv https://youtu.be/dQw4w9WgXcQ"
+  Attendu  : catt.cast_youtube
+  Obtenu   : None
+
+[LLM_FAIL  ] arrete cast
+  Requete  : "arrete le cast"
+  Attendu  : catt.cast_stop
+  Obtenu   : None
+
+[LLM_FAIL  ] pause cast
+  Requete  : "mets le cast en pause"
+  Attendu  : catt.cast_pause
+  Obtenu   : None
+
+[LLM_FAIL  ] reprends cast
+  Requete  : "reprends le cast"
+  Attendu  : catt.cast_resume
+  Obtenu   : None
+
+[LLM_FAIL  ] avance 30s
+  Requete  : "avance de 30 secondes dans le cast"
+  Attendu  : catt.cast_seek
+  Obtenu   : None
+
+[LLM_FAIL  ] baisse volume diffusion
+  Requete  : "baisse le volume de la diffusion"
+  Attendu  : catt.cast_volume
+  Obtenu   : tv.volume_down
+
+======================================================================
+LLM_PASS: 1  LLM_PARTIAL: 0  LLM_FAIL: 20
+SCORE LLM: 5%

@@ -1,0 +1,160 @@
+{
+  "name": "Lyra - Clone VM v3 (Discord)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lyra-clone-vm",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "lyra-clone-vm"
+    },
+    {
+      "parameters": {
+        "command": "=/home/amineutron/dev/fedora-setup/scripts/kvm/kvm-clone.sh {{ $json.source_vm }} {{ $json.new_vm_name }} --start"
+      },
+      "id": "clone",
+      "name": "Execute Clone",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=sleep 30 && /home/amineutron/dev/fedora-setup/scripts/agents/vm-controller/vm-verify.sh {{ $('Webhook').item.json.new_vm_name }} --verbose"
+      },
+      "id": "verify",
+      "name": "Verify Deep",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"embeds\": [{\n    \"title\": \"Verification Clone VM\",\n    \"description\": \"```\\n{{ $json.stdout.substring(0, 1800) }}\\n```\",\n    \"color\": {{ $json.exitCode === 0 ? 3066993 : 15158332 }},\n    \"footer\": { \"text\": \"Lyra - Clone VM\" },\n    \"timestamp\": \"{{ new Date().toISOString() }}\"\n  }]\n}"
+      },
+      "id": "discord-verify",
+      "name": "Discord: Verify Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        850,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"embeds\": [{\n    \"title\": \"Clone VM Termine\",\n    \"fields\": [\n      { \"name\": \"Source\", \"value\": \"{{ $('Webhook').item.json.source_vm }}\", \"inline\": true },\n      { \"name\": \"Clone\", \"value\": \"{{ $('Webhook').item.json.new_vm_name }}\", \"inline\": true },\n      { \"name\": \"Status\", \"value\": \"{{ $('Verify Deep').item.json.exitCode === 0 ? 'OK' : 'ERREUR' }}\", \"inline\": true }\n    ],\n    \"color\": {{ $('Verify Deep').item.json.exitCode === 0 ? 3066993 : 15158332 }},\n    \"footer\": { \"text\": \"Lyra DevOps Assistant\" },\n    \"timestamp\": \"{{ new Date().toISOString() }}\"\n  }]\n}"
+      },
+      "id": "discord-summary",
+      "name": "Discord: Resume",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        850,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"clone\": \"{{ $('Webhook').item.json.new_vm_name }}\", \"verified\": {{ $('Verify Deep').item.json.exitCode === 0 }} }"
+      },
+      "id": "respond",
+      "name": "Respond Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1050,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Execute Clone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Clone": {
+      "main": [
+        [
+          {
+            "node": "Verify Deep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Deep": {
+      "main": [
+        [
+          {
+            "node": "Discord: Verify Report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Discord: Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord: Verify Report": {
+      "main": [
+        [
+          {
+            "node": "Respond Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord: Resume": {
+      "main": [
+        [
+          {
+            "node": "Respond Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

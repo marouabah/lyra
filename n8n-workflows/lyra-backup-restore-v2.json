@@ -1,0 +1,160 @@
+{
+  "name": "Lyra - Backup Restore v2 (Discord)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lyra-backup-restore",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "lyra-backup-restore"
+    },
+    {
+      "parameters": {
+        "command": "=/home/amineutron/dev/fedora-setup/scripts/agents/backup-manager/backup-manager.sh restore --type {{ $json.type || 'timeshift' }} --identifier {{ $json.identifier }}"
+      },
+      "id": "restore",
+      "name": "Execute Restore",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=/home/amineutron/dev/fedora-setup/scripts/agents/backup-manager/backup-manager.sh verify --type {{ $('Webhook').item.json.type || 'timeshift' }} --deep"
+      },
+      "id": "verify",
+      "name": "Verify Restore",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"embeds\": [{\n    \"title\": \"Verification Restauration\",\n    \"description\": \"```\\n{{ $json.stdout.substring(0, 1800) }}\\n```\",\n    \"color\": {{ $json.exitCode === 0 ? 3066993 : 15158332 }},\n    \"footer\": { \"text\": \"Lyra - Backup Manager\" },\n    \"timestamp\": \"{{ new Date().toISOString() }}\"\n  }]\n}"
+      },
+      "id": "discord-verify",
+      "name": "Discord: Verify Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        850,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"embeds\": [{\n    \"title\": \"Backup Restaure avec Succes\",\n    \"fields\": [\n      { \"name\": \"Type\", \"value\": \"{{ $('Webhook').item.json.type || 'timeshift' }}\", \"inline\": true },\n      { \"name\": \"Identifier\", \"value\": \"{{ $('Webhook').item.json.identifier }}\", \"inline\": true },\n      { \"name\": \"Verification\", \"value\": \"{{ $('Verify Restore').item.json.exitCode === 0 ? 'OK' : 'ERREUR' }}\", \"inline\": true }\n    ],\n    \"color\": {{ $('Verify Restore').item.json.exitCode === 0 ? 3066993 : 15158332 }},\n    \"footer\": { \"text\": \"Lyra DevOps Assistant\" },\n    \"timestamp\": \"{{ new Date().toISOString() }}\"\n  }]\n}"
+      },
+      "id": "discord-summary",
+      "name": "Discord: Resume",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        850,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"type\": \"{{ $('Webhook').item.json.type || 'timeshift' }}\", \"identifier\": \"{{ $('Webhook').item.json.identifier }}\", \"verified\": {{ $('Verify Restore').item.json.exitCode === 0 }} }"
+      },
+      "id": "respond",
+      "name": "Respond Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1050,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Execute Restore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Restore": {
+      "main": [
+        [
+          {
+            "node": "Verify Restore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Restore": {
+      "main": [
+        [
+          {
+            "node": "Discord: Verify Report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Discord: Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord: Verify Report": {
+      "main": [
+        [
+          {
+            "node": "Respond Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord: Resume": {
+      "main": [
+        [
+          {
+            "node": "Respond Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

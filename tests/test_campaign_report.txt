@@ -1,0 +1,767 @@
+CAMPAGNE DE TESTS MCP - LYRA RAG v2
+======================================================================
+
+OBJECTIF
+--------
+Tester la detection outil + extraction arguments du pipeline Lyra
+via _rule_based_detect(), sans executer aucun script reel.
+
+LEGENDE
+-------
+PASS      : Outil correct + tous les args attendus presens
+PARTIAL   : Outil correct + args obligatoires OK + args optionnels manquants
+RULE_MISS : Aucune regle ne matche (ira vers EPHAISTOS en production)
+FAIL      : Mauvais outil ou arg obligatoire manquant
+
+RESULTATS DETAILLES
+-------------------
+
+=== FEDORA ===
+[PASS     ] demarre basique
+  Requete   : "demarre preprod-01"
+  Attendu   : fedora.vm_start
+  Obtenu    : fedora.vm_start
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] lance avec nom
+  Requete   : "lance la vm test-server"
+  Attendu   : fedora.vm_start
+  Obtenu    : fedora.vm_start
+  Args      : {'vm_name': 'test-server'}
+[PASS     ] boot
+  Requete   : "booter sandbox-02"
+  Attendu   : fedora.vm_start
+  Obtenu    : fedora.vm_start
+  Args      : {'vm_name': 'sandbox-02'}
+[PASS     ] + wait_ssh
+  Requete   : "demarre preprod-01 et attends le ssh"
+  Attendu   : fedora.vm_start
+  Obtenu    : fedora.vm_start
+  Args      : {'vm_name': 'preprod-01', 'wait_ssh': True}
+[PASS     ] + wait_ip
+  Requete   : "demarre preprod-01 et attends son ip"
+  Attendu   : fedora.vm_start
+  Obtenu    : fedora.vm_start
+  Args      : {'vm_name': 'preprod-01', 'wait_ip': True}
+[PASS     ] alias start
+  Requete   : "start preprod-09"
+  Attendu   : fedora.vm_start
+  Obtenu    : fedora.vm_start
+  Args      : {'vm_name': 'preprod-09'}
+[PASS     ] arrete basique
+  Requete   : "arrete preprod-01"
+  Attendu   : fedora.vm_stop
+  Obtenu    : fedora.vm_stop
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] stoppe
+  Requete   : "stoppe sandbox-02"
+  Attendu   : fedora.vm_stop
+  Obtenu    : fedora.vm_stop
+  Args      : {'vm_name': 'sandbox-02'}
+[PASS     ] + force
+  Requete   : "arrete de force preprod-01"
+  Attendu   : fedora.vm_stop
+  Obtenu    : fedora.vm_stop
+  Args      : {'vm_name': 'preprod-01', 'force': True}
+[PASS     ] stop alias
+  Requete   : "stop neutron-clone"
+  Attendu   : fedora.vm_stop
+  Obtenu    : fedora.vm_stop
+  Args      : {'vm_name': 'neutron-clone'}
+[PASS     ] supprime basique
+  Requete   : "supprime la vm sandbox-01"
+  Attendu   : fedora.vm_destroy
+  Obtenu    : fedora.vm_destroy
+  Args      : {'vm_name': 'sandbox-01'}
+[PASS     ] detruit
+  Requete   : "detruis test-vm"
+  Attendu   : fedora.vm_destroy
+  Obtenu    : fedora.vm_destroy
+  Args      : {'vm_name': 'test-vm'}
+[PASS     ] efface
+  Requete   : "efface la machine sandbox-02"
+  Attendu   : fedora.vm_destroy
+  Obtenu    : fedora.vm_destroy
+  Args      : {'vm_name': 'sandbox-02'}
+[PASS     ] + force
+  Requete   : "supprime de force sandbox-01"
+  Attendu   : fedora.vm_destroy
+  Obtenu    : fedora.vm_destroy
+  Args      : {'vm_name': 'sandbox-01', 'force': True}
+[PASS     ] + keep_storage
+  Requete   : "supprime sandbox-01 mais garde le disque"
+  Attendu   : fedora.vm_destroy
+  Obtenu    : fedora.vm_destroy
+  Args      : {'vm_name': 'sandbox-01', 'keep_storage': True}
+[PASS     ] status specifique
+  Requete   : "status de preprod-01"
+  Attendu   : fedora.vm_status
+  Obtenu    : fedora.vm_status
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] etat VM
+  Requete   : "etat de la vm test-server"
+  Attendu   : fedora.vm_status
+  Obtenu    : fedora.vm_status
+  Args      : {'vm_name': 'test-server'}
+[PASS     ] liste toutes VMs
+  Requete   : "liste mes vms"
+  Attendu   : fedora.vm_status
+  Obtenu    : fedora.vm_status
+[PASS     ] affiche les machines
+  Requete   : "affiche toutes les machines virtuelles"
+  Attendu   : fedora.vm_status
+  Obtenu    : fedora.vm_status
+[PASS     ] quelles sont mes VMs
+  Requete   : "quelles sont mes vms"
+  Attendu   : fedora.vm_status
+  Obtenu    : fedora.vm_status
+[PASS     ] + detailed
+  Requete   : "status detaille de preprod-01"
+  Attendu   : fedora.vm_status
+  Obtenu    : fedora.vm_status
+  Args      : {'vm_name': 'preprod-01', 'detailed': True}
+[PASS     ] donne moi les serveurs
+  Requete   : "donne moi la liste des serveurs"
+  Attendu   : fedora.vm_status
+  Obtenu    : fedora.vm_status
+[PASS     ] execute commande
+  Requete   : "execute ls -la sur preprod-01"
+  Attendu   : fedora.vm_exec
+  Obtenu    : fedora.vm_exec
+  Args      : {'vm_name': 'preprod-01', 'command': 'ls -la'}
+[PASS     ] execute uptime
+  Requete   : "execute uptime sur sandbox-02"
+  Attendu   : fedora.vm_exec
+  Obtenu    : fedora.vm_exec
+  Args      : {'vm_name': 'sandbox-02', 'command': 'uptime'}
+[PASS     ] lance commande
+  Requete   : "lance la commande df -h sur test-server"
+  Attendu   : fedora.vm_exec
+  Obtenu    : fedora.vm_exec
+  Args      : {'vm_name': 'test-server', 'command': 'df -h'}
+[PASS     ] + sudo
+  Requete   : "execute systemctl restart nginx sur preprod-01 en sudo"
+  Attendu   : fedora.vm_exec
+  Obtenu    : fedora.vm_exec
+  Args      : {'vm_name': 'preprod-01', 'command': 'systemctl restart nginx', 'sudo': True}
+[PASS     ] + user
+  Requete   : "execute whoami dans preprod-01"
+  Attendu   : fedora.vm_exec
+  Obtenu    : fedora.vm_exec
+  Args      : {'vm_name': 'preprod-01', 'command': 'whoami'}
+[PASS     ] copie fichier vers VM
+  Requete   : "copie /tmp/config.yaml vers preprod-01"
+  Attendu   : fedora.vm_copy
+  Obtenu    : fedora.vm_copy
+  Args      : {'source': '/tmp/config.yaml', 'vm_name': 'preprod-01', 'dest': '/tmp/config.yaml'}
+[PASS     ] transfere vers VM
+  Requete   : "transfere /home/user/script.sh sur sandbox-02"
+  Attendu   : fedora.vm_copy
+  Obtenu    : fedora.vm_copy
+  Args      : {'source': '/home/user/script.sh', 'vm_name': 'sandbox-02', 'dest': '/tmp/script.sh'}
+[PASS     ] envoie fichier
+  Requete   : "envoie /etc/nginx.conf dans test-server"
+  Attendu   : fedora.vm_copy
+  Obtenu    : fedora.vm_copy
+  Args      : {'source': '/etc/nginx.conf', 'vm_name': 'test-server', 'dest': '/tmp/nginx.conf'}
+[PASS     ] + recursive
+  Requete   : "copie /home/user/projet vers preprod-01 en recursif"
+  Attendu   : fedora.vm_copy
+  Obtenu    : fedora.vm_copy
+  Args      : {'source': '/home/user/projet', 'vm_name': 'preprod-01', 'dest': '/tmp/projet', 'recursive': True}
+[PASS     ] cree snapshot
+  Requete   : "cree un snapshot de preprod-01"
+  Attendu   : fedora.vm_snapshot
+  Obtenu    : fedora.vm_snapshot
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] snapshot direct
+  Requete   : "snapshot sandbox-02"
+  Attendu   : fedora.vm_snapshot
+  Obtenu    : fedora.vm_snapshot
+  Args      : {'vm_name': 'sandbox-02'}
+[PASS     ] instantane
+  Requete   : "instantane de test-server"
+  Attendu   : fedora.vm_snapshot
+  Obtenu    : fedora.vm_snapshot
+  Args      : {'vm_name': 'test-server'}
+[PASS     ] capture
+  Requete   : "capture preprod-01"
+  Attendu   : fedora.vm_snapshot
+  Obtenu    : fedora.vm_snapshot
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] + live
+  Requete   : "cree un snapshot live de preprod-01"
+  Attendu   : fedora.vm_snapshot
+  Obtenu    : fedora.vm_snapshot
+  Args      : {'vm_name': 'preprod-01', 'live': True}
+[PASS     ] clone basique
+  Requete   : "clone preprod-01 en test-clone"
+  Attendu   : fedora.vm_clone
+  Obtenu    : fedora.vm_clone
+  Args      : {'source_vm': 'preprod-01', 'new_vm_name': 'test-clone'}
+[PASS     ] duplique
+  Requete   : "duplique sandbox-02 en sandbox-03"
+  Attendu   : fedora.vm_clone
+  Obtenu    : fedora.vm_clone
+  Args      : {'source_vm': 'sandbox-02', 'new_vm_name': 'sandbox-03'}
+[PASS     ] + COW/linked
+  Requete   : "clone preprod-01 en test-cow en cow"
+  Attendu   : fedora.vm_clone
+  Obtenu    : fedora.vm_clone
+  Args      : {'source_vm': 'preprod-01', 'new_vm_name': 'test-cow', 'linked': True}
+[PASS     ] + start apres
+  Requete   : "clone preprod-01 en test-clone et demarre"
+  Attendu   : fedora.vm_clone
+  Obtenu    : fedora.vm_clone
+  Args      : {'source_vm': 'preprod-01', 'new_vm_name': 'test-clone', 'start': True}
+[PASS     ] clone systeme basique
+  Requete   : "clone systeme neutron en neutron-clone"
+  Attendu   : fedora.vm_clone_system
+  Obtenu    : fedora.vm_clone_system
+  Args      : {'source_vm': 'neutron', 'new_vm_name': 'neutron-clone'}
+[PASS     ] duplique systeme
+  Requete   : "duplique le systeme neutron en backup-system"
+  Attendu   : fedora.vm_clone_system
+  Obtenu    : fedora.vm_clone_system
+  Args      : {'source_vm': 'neutron', 'new_vm_name': 'backup-system'}
+[PASS     ] + dry_run
+  Requete   : "clone systeme neutron en test en mode dry-run"
+  Attendu   : fedora.vm_clone_system
+  Obtenu    : fedora.vm_clone_system
+  Args      : {'source_vm': 'neutron', 'new_vm_name': 'test', 'dry_run': True}
+[PASS     ] verifie VM specifique
+  Requete   : "verifie neutron-clone"
+  Attendu   : fedora.vm_verify
+  Obtenu    : fedora.vm_verify
+  Args      : {'vm_name': 'neutron-clone'}
+[PASS     ] verifie la VM
+  Requete   : "verifie la vm preprod-01"
+  Attendu   : fedora.vm_verify
+  Obtenu    : fedora.vm_verify
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] verif alias
+  Requete   : "verif sandbox-02"
+  Attendu   : fedora.vm_verify
+  Obtenu    : fedora.vm_verify
+  Args      : {'vm_name': 'sandbox-02'}
+[PASS     ] + quick
+  Requete   : "verifie rapidement neutron-clone"
+  Attendu   : fedora.vm_verify
+  Obtenu    : fedora.vm_verify
+  Args      : {'vm_name': 'neutron-clone', 'quick': True}
+[PASS     ] + verbose
+  Requete   : "verifie neutron-clone en detail"
+  Attendu   : fedora.vm_verify
+  Obtenu    : fedora.vm_verify
+  Args      : {'vm_name': 'neutron-clone', 'verbose': True}
+[PASS     ] + compare_packages
+  Requete   : "verifie neutron-clone avec comparaison des paquets"
+  Attendu   : fedora.vm_verify
+  Obtenu    : fedora.vm_verify
+  Args      : {'vm_name': 'neutron-clone', 'compare_packages': True}
+[PASS     ] export classic defaut
+  Requete   : "exporte preprod-01"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'classic'}
+[PASS     ] export mode exam
+  Requete   : "exporte preprod-01 en mode exam"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'exam'}
+[PASS     ] export mode examen
+  Requete   : "exporte system-clone-final mode examen"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'system-clone-final', 'mode': 'exam'}
+[PASS     ] export mode custom
+  Requete   : "exporte preprod-01 en mode custom"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'custom'}
+[PASS     ] export personnalise
+  Requete   : "exporte preprod-01 en mode personnalise"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'custom'}
+[PASS     ] emballe VM
+  Requete   : "emballe sandbox-02"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'sandbox-02', 'mode': 'classic'}
+[PASS     ] + output_path
+  Requete   : "exporte preprod-01 vers /mnt/exports"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'classic', 'output_path': '/mnt/exports'}
+[PASS     ] + force
+  Requete   : "exporte de force preprod-01"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'classic', 'force': True}
+[PASS     ] + dry_run
+  Requete   : "exporte preprod-01 en mode test dry-run"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'classic', 'dry_run': True}
+[PASS     ] importe archive
+  Requete   : "importe /home/amineutron/vm-exports/preprod-01-export-20260227-classic.tar.gz"
+  Attendu   : fedora.vm_import
+  Obtenu    : fedora.vm_import
+  Args      : {'archive_path': '/home/amineutron/vm-exports/preprod-01-export-20260227-classic.tar.gz'}
+[PASS     ] importe avec nouveau nom
+  Requete   : "importe /home/amineutron/vm-exports/preprod-01-export-20260227-classic.tar.gz sous le nom test-import"
+  Attendu   : fedora.vm_import
+  Obtenu    : fedora.vm_import
+  Args      : {'archive_path': '/home/amineutron/vm-exports/preprod-01-export-20260227-classic.tar.gz', 'new_name': 'test-import'}
+[PASS     ] charge VM
+  Requete   : "charge la vm depuis ~/vm-exports/system-clone-final-export-20260226-211346-classic.tar.gz"
+  Attendu   : fedora.vm_import
+  Obtenu    : fedora.vm_import
+  Args      : {'archive_path': '~/vm-exports/system-clone-final-export-20260226-211346-classic.tar.gz'}
+[PASS     ] + start apres import
+  Requete   : "importe /tmp/test.tar.gz et demarre"
+  Attendu   : fedora.vm_import
+  Obtenu    : fedora.vm_import
+  Args      : {'archive_path': '/tmp/test.tar.gz', 'start': True}
+[PASS     ] + dry_run
+  Requete   : "importe /tmp/test.tar.gz en dry-run"
+  Attendu   : fedora.vm_import
+  Obtenu    : fedora.vm_import
+  Args      : {'archive_path': '/tmp/test.tar.gz', 'dry_run': True}
+
+=== BACKUP ===
+[PASS     ] status backup
+  Requete   : "status des backups"
+  Attendu   : fedora.backup_status
+  Obtenu    : fedora.backup_status
+[PASS     ] etat backup
+  Requete   : "etat des sauvegardes"
+  Attendu   : fedora.backup_status
+  Obtenu    : fedora.backup_status
+[PASS     ] dashboard backup
+  Requete   : "dashboard backup"
+  Attendu   : fedora.backup_status
+  Obtenu    : fedora.backup_status
+[PASS     ] status sauvegarde
+  Requete   : "status de mes sauvegardes"
+  Attendu   : fedora.backup_status
+  Obtenu    : fedora.backup_status
+[PASS     ] liste backups
+  Requete   : "liste les backups"
+  Attendu   : fedora.backup_list
+  Obtenu    : fedora.backup_list
+[PASS     ] affiche sauvegardes
+  Requete   : "affiche mes sauvegardes"
+  Attendu   : fedora.backup_list
+  Obtenu    : fedora.backup_list
+[PASS     ] montre backups
+  Requete   : "montre les backups"
+  Attendu   : fedora.backup_list
+  Obtenu    : fedora.backup_list
+[PASS     ] quelles sauvegardes
+  Requete   : "quelles sont mes sauvegardes"
+  Attendu   : fedora.backup_list
+  Obtenu    : fedora.backup_list
+[PASS     ] + type timeshift
+  Requete   : "liste les backups timeshift"
+  Attendu   : fedora.backup_list
+  Obtenu    : fedora.backup_list
+  Args      : {'type': 'timeshift'}
+[PASS     ] + type borg
+  Requete   : "liste les sauvegardes borg"
+  Attendu   : fedora.backup_list
+  Obtenu    : fedora.backup_list
+  Args      : {'type': 'borg'}
+[PASS     ] + detailed
+  Requete   : "liste les backups en detail"
+  Attendu   : fedora.backup_list
+  Obtenu    : fedora.backup_list
+  Args      : {'detailed': True}
+[PASS     ] cree backup
+  Requete   : "cree un backup"
+  Attendu   : fedora.backup_create
+  Obtenu    : fedora.backup_create
+[PASS     ] fais sauvegarde
+  Requete   : "fais une sauvegarde"
+  Attendu   : fedora.backup_create
+  Obtenu    : fedora.backup_create
+[PASS     ] lance backup
+  Requete   : "lance un backup"
+  Attendu   : fedora.backup_create
+  Obtenu    : fedora.backup_create
+[PASS     ] backup de VM
+  Requete   : "cree un backup de preprod-01"
+  Attendu   : fedora.backup_create
+  Obtenu    : fedora.backup_create
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] + type timeshift
+  Requete   : "cree un backup timeshift"
+  Attendu   : fedora.backup_create
+  Obtenu    : fedora.backup_create
+  Args      : {'vm_name': 'timeshift', 'type': 'timeshift'}
+[PASS     ] + verify
+  Requete   : "cree un backup et verifie"
+  Attendu   : fedora.backup_create
+  Obtenu    : fedora.backup_create
+  Args      : {'vm_name': 'et', 'verify': True}
+[PASS     ] + dry_run
+  Requete   : "cree un backup en dry-run"
+  Attendu   : fedora.backup_create
+  Obtenu    : fedora.backup_create
+  Args      : {'vm_name': 'en', 'dry_run': True}
+[PASS     ] restaure backup
+  Requete   : "restaure le backup"
+  Attendu   : fedora.backup_restore
+  Obtenu    : fedora.backup_restore
+[PASS     ] restaure sauvegarde
+  Requete   : "restaure ma sauvegarde"
+  Attendu   : fedora.backup_restore
+  Obtenu    : fedora.backup_restore
+[PASS     ] restore alias
+  Requete   : "restore le backup de preprod-01"
+  Attendu   : fedora.backup_restore
+  Obtenu    : fedora.backup_restore
+  Args      : {'identifier': 'preprod-01'}
+[PASS     ] + dry_run
+  Requete   : "restaure le backup en dry-run"
+  Attendu   : fedora.backup_restore
+  Obtenu    : fedora.backup_restore
+  Args      : {'identifier': 'en', 'dry_run': True}
+[PASS     ] + force
+  Requete   : "restaure de force la sauvegarde"
+  Attendu   : fedora.backup_restore
+  Obtenu    : fedora.backup_restore
+  Args      : {'force': True}
+[PASS     ] verifie backup
+  Requete   : "verifie le backup"
+  Attendu   : fedora.backup_verify
+  Obtenu    : fedora.backup_verify
+[PASS     ] verifie sauvegarde
+  Requete   : "verifie la sauvegarde"
+  Attendu   : fedora.backup_verify
+  Obtenu    : fedora.backup_verify
+[PASS     ] controle backup
+  Requete   : "controle le backup"
+  Attendu   : fedora.backup_verify
+  Obtenu    : fedora.backup_verify
+[PASS     ] verifie backup VM
+  Requete   : "verifie le backup de preprod-01"
+  Attendu   : fedora.backup_verify
+  Obtenu    : fedora.backup_verify
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] + deep
+  Requete   : "verifie en profondeur le backup"
+  Attendu   : fedora.backup_verify
+  Obtenu    : fedora.backup_verify
+  Args      : {'deep': True}
+[PASS     ] + quick
+  Requete   : "verifie rapidement le backup"
+  Attendu   : fedora.backup_verify
+  Obtenu    : fedora.backup_verify
+  Args      : {'quick': True}
+[PASS     ] nettoie backups
+  Requete   : "nettoie les backups"
+  Attendu   : fedora.backup_clean
+  Obtenu    : fedora.backup_clean
+[PASS     ] purge sauvegardes
+  Requete   : "purge les sauvegardes"
+  Attendu   : fedora.backup_clean
+  Obtenu    : fedora.backup_clean
+[PASS     ] supprime anciens backups
+  Requete   : "supprime les anciens backups"
+  Attendu   : fedora.backup_clean
+  Obtenu    : fedora.backup_clean
+[PASS     ] efface backup
+  Requete   : "efface les vieux backups"
+  Attendu   : fedora.backup_clean
+  Obtenu    : fedora.backup_clean
+[PASS     ] + dry_run
+  Requete   : "nettoie les backups en dry-run"
+  Attendu   : fedora.backup_clean
+  Obtenu    : fedora.backup_clean
+  Args      : {'dry_run': True}
+[PASS     ] + keep_last
+  Requete   : "nettoie les backups garde les 3 derniers"
+  Attendu   : fedora.backup_clean
+  Obtenu    : fedora.backup_clean
+  Args      : {'keep_last': 3}
+
+=== DENON ===
+[PASS     ] allume denon
+  Requete   : "allume le denon"
+  Attendu   : denon.power_on
+  Obtenu    : denon.power_on
+[PASS     ] demarre denon
+  Requete   : "demarre le denon"
+  Attendu   : denon.power_on
+  Obtenu    : denon.power_on
+[PASS     ] eteins denon
+  Requete   : "eteins le denon"
+  Attendu   : denon.power_off
+  Obtenu    : denon.power_off
+[PASS     ] arrete denon
+  Requete   : "arrete le denon"
+  Attendu   : denon.power_off
+  Obtenu    : denon.power_off
+[PASS     ] stop denon
+  Requete   : "stop le denon"
+  Attendu   : denon.power_off
+  Obtenu    : denon.power_off
+[PASS     ] volume denon 44
+  Requete   : "volume denon a 44"
+  Attendu   : denon.volume_set
+  Obtenu    : denon.volume_set
+  Args      : {'level': 44}
+[PASS     ] volume denon 50
+  Requete   : "mets le volume denon a 50"
+  Attendu   : denon.volume_set
+  Obtenu    : denon.volume_set
+  Args      : {'level': 50}
+[PASS     ] monte volume denon
+  Requete   : "monte le volume denon"
+  Attendu   : denon.volume_up
+  Obtenu    : denon.volume_up
+[PASS     ] baisse volume denon
+  Requete   : "baisse le volume denon"
+  Attendu   : denon.volume_down
+  Obtenu    : denon.volume_down
+[PASS     ] 50 de volume denon
+  Requete   : "mets 50 de volume sur le denon"
+  Attendu   : denon.volume_set
+  Obtenu    : denon.volume_set
+  Args      : {'level': 50}
+[PASS     ] mute denon
+  Requete   : "mute le denon"
+  Attendu   : denon.mute_on
+  Obtenu    : denon.mute_on
+[PASS     ] sourdine denon
+  Requete   : "active la sourdine sur le denon"
+  Attendu   : denon.mute_on
+  Obtenu    : denon.mute_on
+[PASS     ] coupe son denon
+  Requete   : "coupe le son du denon"
+  Attendu   : denon.mute_on
+  Obtenu    : denon.mute_on
+[PASS     ] demute denon
+  Requete   : "demute le denon"
+  Attendu   : denon.mute_off
+  Obtenu    : denon.mute_off
+[PASS     ] unmute denon
+  Requete   : "unmute le denon"
+  Attendu   : denon.mute_off
+  Obtenu    : denon.mute_off
+[PASS     ] desactive mute denon
+  Requete   : "desactive le mute sur le denon"
+  Attendu   : denon.mute_off
+  Obtenu    : denon.mute_off
+
+=== TV ===
+[PASS     ] allume TV
+  Requete   : "allume la tv"
+  Attendu   : tv.power_on
+  Obtenu    : tv.power_on
+[PASS     ] eteins TV
+  Requete   : "eteins la tele"
+  Attendu   : tv.power_off
+  Obtenu    : tv.power_off
+[PASS     ] TV en veille
+  Requete   : "mets la tv en veille"
+  Attendu   : tv.power_off
+  Obtenu    : tv.power_off
+[PASS     ] monte volume TV
+  Requete   : "monte le volume de la tv"
+  Attendu   : tv.volume_up
+  Obtenu    : tv.volume_up
+[PASS     ] baisse volume TV
+  Requete   : "baisse le son de la tele"
+  Attendu   : tv.volume_down
+  Obtenu    : tv.volume_down
+[PASS     ] volume TV 40
+  Requete   : "mets le volume de la tv a 40"
+  Attendu   : tv.volume_set
+  Obtenu    : tv.volume_set
+  Args      : {'level': 40}
+[PASS     ] mute TV
+  Requete   : "mets la tv en muet"
+  Attendu   : tv.mute
+  Obtenu    : tv.mute
+[PASS     ] lance Netflix sur TV
+  Requete   : "lance netflix sur la tv"
+  Attendu   : tv.launch_app
+  Obtenu    : tv.launch_app
+  Args      : {'app': 'netflix'}
+[PASS     ] ouvre YouTube TV
+  Requete   : "ouvre youtube sur la tele"
+  Attendu   : tv.launch_app
+  Obtenu    : tv.launch_app
+  Args      : {'app': 'youtube'}
+[PASS     ] youtube video
+  Requete   : "joue cette video youtube sur la tv https://youtu.be/dQw4w9WgXcQ"
+  Attendu   : tv.youtube_video
+  Obtenu    : tv.youtube_video
+  Args      : {'video_id': 'https://youtu.be/dqw4w9wgxcq'}
+[PASS     ] allume ambilight
+  Requete   : "allume l ambilight"
+  Attendu   : tv.ambilight_on
+  Obtenu    : tv.ambilight_on
+[PASS     ] eteins ambilight
+  Requete   : "eteins l ambilight"
+  Attendu   : tv.ambilight_off
+  Obtenu    : tv.ambilight_off
+[PASS     ] ambilight couleur
+  Requete   : "mets l ambilight en bleu"
+  Attendu   : tv.ambilight_color
+  Obtenu    : tv.ambilight_color
+  Args      : {'r': 0, 'g': 0, 'b': 255}
+
+=== HUE ===
+[PASS     ] allume lumieres
+  Requete   : "allume les lumieres"
+  Attendu   : hue.turn_on_group
+  Obtenu    : hue.turn_on_group
+  Args      : {'group_id': 81}
+[PASS     ] allume toutes lumieres
+  Requete   : "allume toutes les lumieres"
+  Attendu   : hue.turn_on_group
+  Obtenu    : hue.turn_on_group
+  Args      : {'group_id': 81}
+[PASS     ] eteins lumieres groupe
+  Requete   : "eteins les lumieres"
+  Attendu   : hue.turn_off_group
+  Obtenu    : hue.turn_off_group
+  Args      : {'group_id': 81}
+[PASS     ] eteins lumiere bureau
+  Requete   : "eteins la lumiere bureau"
+  Attendu   : hue.turn_off_light
+  Obtenu    : hue.turn_off_light
+  Args      : {'light_name': 'bureau'}
+[PASS     ] eteins lumiere salon
+  Requete   : "eteins la lumiere salon"
+  Attendu   : hue.turn_off_light
+  Obtenu    : hue.turn_off_light
+  Args      : {'light_name': 'salon'}
+[PASS     ] allume lumiere chevet
+  Requete   : "allume la lumiere chevet"
+  Attendu   : hue.turn_on_light
+  Obtenu    : hue.turn_on_light
+  Args      : {'light_name': 'chevet'}
+[PASS     ] luminosite 50%
+  Requete   : "mets la luminosite a 50 pour cent"
+  Attendu   : hue.set_brightness
+  Obtenu    : hue.set_brightness
+  Args      : {'brightness': 127}
+[PASS     ] lumiere plus forte
+  Requete   : "mets les lumieres plus fortes"
+  Attendu   : hue.set_brightness
+  Obtenu    : hue.set_brightness
+  Args      : {'brightness': 200}
+[PASS     ] couleur rouge
+  Requete   : "mets les lumieres en rouge"
+  Attendu   : hue.set_color_rgb
+  Obtenu    : hue.set_color_rgb
+  Args      : {'r': 255, 'g': 0, 'b': 0}
+[PASS     ] ambiance bleue
+  Requete   : "mets une ambiance bleue"
+  Attendu   : hue.set_color_rgb
+  Obtenu    : hue.set_color_rgb
+  Args      : {'r': 0, 'g': 0, 'b': 255}
+[PASS     ] active scene relax
+  Requete   : "active la scene relax"
+  Attendu   : hue.activate_scene_by_name
+  Obtenu    : hue.activate_scene_by_name
+  Args      : {'scene_name': 'relax'}
+[PASS     ] scene lecture
+  Requete   : "lance la scene lecture"
+  Attendu   : hue.activate_scene_by_name
+  Obtenu    : hue.activate_scene_by_name
+  Args      : {'scene_name': 'lecture'}
+
+=== EDGE ===
+[PASS     ] start ne matche pas TV
+  Requete   : "lance netflix sur la tv"
+  Attendu   : tv.launch_app
+  Obtenu    : tv.launch_app
+  Args      : {'app': 'netflix'}
+[PASS     ] stop ne matche pas backup
+  Requete   : "status des backups"
+  Attendu   : fedora.backup_status
+  Obtenu    : fedora.backup_status
+[PASS     ] verifie backup vs vm
+  Requete   : "verifie le backup de preprod-01"
+  Attendu   : fedora.backup_verify
+  Obtenu    : fedora.backup_verify
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] supprime backups vs vm
+  Requete   : "supprime les anciens backups"
+  Attendu   : fedora.backup_clean
+  Obtenu    : fedora.backup_clean
+[PASS     ] clone systeme vs clone normal
+  Requete   : "clone systeme neutron en backup"
+  Attendu   : fedora.vm_clone_system
+  Obtenu    : fedora.vm_clone_system
+  Args      : {'source_vm': 'neutron', 'new_vm_name': 'backup'}
+[PASS     ] export mode exam syntaxe alternative
+  Requete   : "exporte system-clone-final en mode examen"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'system-clone-final', 'mode': 'exam'}
+[PASS     ] import avec renommage
+  Requete   : "importe /home/amineutron/vm-exports/test.tar.gz sous le nom ma-vm"
+  Attendu   : fedora.vm_import
+  Obtenu    : fedora.vm_import
+  Args      : {'archive_path': '/home/amineutron/vm-exports/test.tar.gz', 'new_name': 'ma-vm'}
+[PASS     ] vm_status global vs specifique
+  Requete   : "status de preprod-01"
+  Attendu   : fedora.vm_status
+  Obtenu    : fedora.vm_status
+  Args      : {'vm_name': 'preprod-01'}
+[PASS     ] snapshot sans nom VM
+  Requete   : "cree un snapshot"
+  Attendu   : NONE
+  Obtenu    : NONE
+[PASS     ] copie chemin complexe
+  Requete   : "copie /home/amineutron/projet/config.json vers sandbox-02"
+  Attendu   : fedora.vm_copy
+  Obtenu    : fedora.vm_copy
+  Args      : {'source': '/home/amineutron/projet/config.json', 'vm_name': 'sandbox-02', 'dest': '/tmp/config.json'}
+[PASS     ] exec commande avec espaces
+  Requete   : "execute apt-get update sur preprod-01"
+  Attendu   : fedora.vm_exec
+  Obtenu    : fedora.vm_exec
+  Args      : {'vm_name': 'preprod-01', 'command': 'apt-get update'}
+[PASS     ] export custom synonyme sur-mesure
+  Requete   : "exporte preprod-01 en mode sur-mesure"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'custom'}
+[PASS     ] export custom synonyme choix
+  Requete   : "exporte preprod-01 avec choix des operations"
+  Attendu   : fedora.vm_export
+  Obtenu    : fedora.vm_export
+  Args      : {'vm_name': 'preprod-01', 'mode': 'custom'}
+
+SCORES PAR CATEGORIE
+--------------------
+  BACKUP     : 35 PASS  0 PARTIAL  0 RULE_MISS  0 FAIL  / 35 tests  [100%]
+  DENON      : 16 PASS  0 PARTIAL  0 RULE_MISS  0 FAIL  / 16 tests  [100%]
+  EDGE       : 13 PASS  0 PARTIAL  0 RULE_MISS  0 FAIL  / 13 tests  [100%]
+  FEDORA     : 63 PASS  0 PARTIAL  0 RULE_MISS  0 FAIL  / 63 tests  [100%]
+  HUE        : 12 PASS  0 PARTIAL  0 RULE_MISS  0 FAIL  / 12 tests  [100%]
+  TV         : 13 PASS  0 PARTIAL  0 RULE_MISS  0 FAIL  / 13 tests  [100%]
+
+SCORE FINAL
+-----------
+  PASS      : 152
+  PARTIAL   : 0
+  RULE_MISS : 0
+  FAIL      : 0
+  TOTAL     : 152 tests
+  SCORE     : 100%
+
+ANALYSE
+-------
+Les RULE_MISS correspondent aux outils TV, HUE (sauf turn_on/off_group/light)
+qui ne sont pas couverts par _rule_based_detect.
+Ces requetes sont traitees par EPHAISTOS (LLM) en production.
+Les PARTIAL indiquent des args optionnels mentionnes dans la requete mais non
+extraits par les regles (attendu - les regles n'extraient pas tous les params).

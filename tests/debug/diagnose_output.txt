@@ -1,0 +1,80 @@
+================================================================================
+DIAGNOSTIC RAG ENHANCED - Progressif
+================================================================================
+
+[1/4] Test: SlangNormalizer
+
+================================================================================
+ÉTAPE 1: SlangNormalizer
+================================================================================
+✓ Chargé avec 109 patterns
+  ✓ 'start preprod-09' → 'démarre preprod-09'
+  ✓ 'stop la vm' → 'arrête la vm'
+  ✓ 'switch les lights' → 'allume les lumières'
+  ✓ 'cast cette vidéo' → 'diffuse cette vidéo'
+
+[2/4] Test: SynonymExpander
+
+================================================================================
+ÉTAPE 2: SynonymExpander
+================================================================================
+✓ Chargé avec 39 termes
+  ✓ 'démarre la vm' → +7 tokens
+    'démarre la vm lance boot active machine serveur instance virtuelle...'
+  ✓ 'allume les lumières' → +6 tokens
+    'allume les lumières active démarre éclaire éclairages lampes ampoules...'
+  ✓ 'clone preprod-09' → +3 tokens
+    'clone preprod-09 duplique copie reproduit...'
+
+[3/4] Test: RAG Retrieval
+
+================================================================================
+ÉTAPE 3: RAG Retrieval (Semantic + Keyword + Fusion)
+================================================================================
+  [1/3] Initialisation Pipeline V2...
+  ✓ Initialisé en 6625ms
+
+  [2/3] Tests Semantic Search...
+
+  ✗ ERREUR: 'SemanticResult' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/amineutron/dev/lyra/tests/debug/diagnose.py", line 210, in main
+    success = test_func()
+              ^^^^^^^^^^^
+  File "/home/amineutron/dev/lyra/tests/debug/diagnose.py", line 100, in test_step_3_rag
+    tool_name = top['metadata'].get('name', 'N/A')
+                ~~~^^^^^^^^^^^^
+TypeError: 'SemanticResult' object is not subscriptable
+
+[4/4] Test: Pipeline Flow
+
+================================================================================
+ÉTAPE 4: Pipeline Complet (Slang → Synonym → RAG)
+================================================================================
+
+  Query: 'start la vm preprod-09'
+    [1] Slang:   'démarre la vm preprod-09' (0.09ms)
+    [2] Synonym: +7 tokens (0.03ms)
+
+  ✗ ERREUR: 'FusedResult' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/amineutron/dev/lyra/tests/debug/diagnose.py", line 210, in main
+    success = test_func()
+              ^^^^^^^^^^^
+  File "/home/amineutron/dev/lyra/tests/debug/diagnose.py", line 179, in test_step_4_pipeline_flow
+    tool_name = top['metadata'].get('name', 'N/A')
+                ~~~^^^^^^^^^^^^
+TypeError: 'FusedResult' object is not subscriptable
+
+================================================================================
+RÉSUMÉ DIAGNOSTIC
+================================================================================
+  ✓ SlangNormalizer                (0.0s)
+  ✓ SynonymExpander                (0.0s)
+  ✗ RAG Retrieval                  (0.0s)
+  ✗ Pipeline Flow                  (0.0s)
+
+  Total: 2/4 étapes réussies
+
+  ⚠️  Certains composants ont échoué
+================================================================================
