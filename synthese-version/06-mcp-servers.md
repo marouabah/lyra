@@ -133,7 +133,7 @@ hue:
 # Credentials
 hue:
   bridge_ip: "192.168.1.51"
-  username: "***REMOVED***"
+  username: "<cle-api-hue>"  # generee au pairing bridge, stockee hors git
 ```
 
 ### Outils Lumières (8)
@@ -205,8 +205,8 @@ tv:
 # Credentials
 tv:
   host: "192.168.1.50"
-  user: "***REMOVED***"
-  pass: "***REMOVED***"
+  user: "<user-jointspace>"
+  pass: "<64-hex genere au pairing JointSpace, stocke hors git>"
 ```
 
 ### Outils Power (2)
